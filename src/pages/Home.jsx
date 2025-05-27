@@ -6,7 +6,7 @@ export default function LandingPage() {
   return (
     <div className="text-center py-20 bg-slate-50 dark:bg-gray-900">
       <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-4">
-        AI가 분석하는 맞춤형 두피 케어
+        AI가 분석하는 맞춤형 두피 케어입니다
       </h1>
       <p className="text-gray-600 dark:text-gray-300 mb-6">
         단 1분만에 당신의 두피 상태를 분석하고 맞춤 솔루션을 제공합니다
