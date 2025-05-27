@@ -50,7 +50,7 @@ export default function DiagnosisPage() {
     formData.append("file", image);
 
     try {
-      const res = await fetch("https://test2-o3lj.onrender.com/api/predict", {
+      const res = await fetch("https://backtest-563i.onrender.com/api/predict", {
         method: "POST",
         body: formData,
       });
