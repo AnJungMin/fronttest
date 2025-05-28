@@ -27,7 +27,9 @@ export default function ResultCard({ severity, heatmapUrl }) {
         <div className="mt-4">
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">진단 히트맵</p>
           <img
-            src={`https://scalp-api-latest.onrender.com/${heatmapUrl}`}
+            src={`https://scalp-api-latest.onrender.com${
+              heatmapUrl.startsWith("/") ? "" : "/"
+            }${heatmapUrl}`}
             alt="히트맵 이미지"
             className="rounded-lg w-full max-w-md mx-auto"
           />
