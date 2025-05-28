@@ -53,9 +53,22 @@ export default function DiagnosisPage() {
         method: "POST",
         body: formData,
       });
-      const data = await res.json();
 
-      // ✅ 백엔드 응답 구조에 맞게 가공
+      const data = await res.json();
+      console.log("✅ 백엔드 응답:", data); // 응답 로그 출력
+
+      // 방어 처리
+      if (
+        !data ||
+        !data.result ||
+        typeof data.result.class !== "string" ||
+        !data.result.confidence ||
+        !data.heatmap_url
+      ) {
+        alert("예측 결과를 불러올 수 없습니다. 다시 시도해주세요.");
+        return;
+      }
+
       const formatted = [
         {
           disease: "모낭홍반(농포)",
@@ -69,7 +82,7 @@ export default function DiagnosisPage() {
       navigate("/result");
     } catch (err) {
       alert("예측 요청에 실패했습니다.");
-      console.error(err);
+      console.error("❌ 예측 에러:", err);
     } finally {
       setLoading(false);
     }
