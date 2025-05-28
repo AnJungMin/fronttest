@@ -50,7 +50,7 @@ export default function DiagnosisPage() {
     formData.append("file", image);
 
     try {
-      const res = await fetch("https://backtest-563i.onrender.com/api/predict", {
+      const res = await fetch("https://scalp-api-latest.onrender.com/api/predict", {
         method: "POST",
         body: formData,
       });
