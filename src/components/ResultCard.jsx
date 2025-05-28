@@ -1,4 +1,4 @@
-export default function ResultCard({ disease, severity, confidence }) {
+export default function ResultCard({ severity, confidence }) {
   const severityStyle = {
     양호: "bg-green-100 text-green-800",
     경증: "bg-yellow-100 text-yellow-800",
@@ -28,7 +28,9 @@ export default function ResultCard({ disease, severity, confidence }) {
         <h4 className="text-lg font-bold text-gray-900 dark:text-white">
           모낭홍반(농포)
         </h4>
-        <span className={`text-sm px-3 py-1 rounded-full font-medium ${severityStyle[severity]}`}>
+        <span
+          className={`text-sm px-3 py-1 rounded-full font-medium ${severityStyle[severity]}`}
+        >
           {severity}
         </span>
       </div>
