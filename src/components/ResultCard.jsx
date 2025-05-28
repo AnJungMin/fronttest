@@ -5,7 +5,7 @@ export default function ResultCard({ severity, heatmapUrl }) {
     중등도: "bg-orange-100 text-orange-800",
     중증: "bg-red-100 text-red-800",
   };
-
+  console.log("[ResultCard] heatmapUrl:", heatmapUrl);
   return (
     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 shadow">
       <div className="flex justify-between items-center mb-3">
