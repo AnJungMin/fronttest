@@ -10,7 +10,7 @@ export default function Result() {
     try {
       const stored = localStorage.getItem("scalpcare_result");
 
-      // ✅ undefined, null, 잘못된 값 대응
+      // ❗ 값이 없거나 비정상일 경우 진단 페이지로 이동
       if (!stored || stored === "undefined") {
         alert("예측 결과가 없습니다. 다시 진단해주세요.");
         navigate("/diagnosis");
@@ -19,7 +19,6 @@ export default function Result() {
 
       const parsed = JSON.parse(stored);
 
-      // ✅ 배열이 아니거나 비어 있으면 진단으로 리디렉션
       if (!Array.isArray(parsed) || parsed.length === 0) {
         alert("예측 결과가 없습니다. 다시 진단해주세요.");
         navigate("/diagnosis");
@@ -45,7 +44,6 @@ export default function Result() {
           <ResultCard
             key={idx}
             severity={item.severity}
-            confidence={item.confidence}
           />
         ))}
       </div>
