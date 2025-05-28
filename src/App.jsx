@@ -1,32 +1,19 @@
-import { Routes, Route } from "react-router-dom";
-import Header from "./components/Header";
-import Home from "./pages/Home";
-import Diagnosis from "./pages/DiagnosisPage";
+import { Routes, Route, Navigate } from "react-router-dom";
+import DiagnosisPage from "./pages/DiagnosisPage";
 import Result from "./pages/Result";
-import ProductList from "./pages/ProductList";
-import ProductDetail from "./pages/ProductDetail";
-import MapPage from "./pages/MapPage";
-import CommunityPage from "./pages/CommunityPage";
-
-// ✅ 임시 컴포넌트 (없으면 에러)
-const LoginPage = () => <div className="p-6">로그인 페이지 준비 중입니다.</div>;
 
 function App() {
   return (
-    <>
-      <Header />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/diagnosis" element={<Diagnosis />} />
-        <Route path="/result" element={<Result />} />
-        <Route path="/products" element={<ProductList />} />
-        <Route path="/products/:id" element={<ProductDetail />} />
-        <Route path="/community" element={<CommunityPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/map" element={<MapPage />} />
-        <Route path="/community" element={<CommunityPage />} />
-      </Routes>
-    </>
+    <Routes>
+      {/* "/"로 들어오면 "/diagnosis"로 리다이렉트 */}
+      <Route path="/" element={<Navigate to="/diagnosis" replace />} />
+
+      {/* 진단 페이지 */}
+      <Route path="/diagnosis" element={<DiagnosisPage />} />
+
+      {/* 결과 페이지 */}
+      <Route path="/result" element={<Result />} />
+    </Routes>
   );
 }
 

@@ -1,14 +1,19 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Webcam from "react-webcam";
+import ResultCard from "../components/ResultCard";
 
 export default function DiagnosisPage() {
   const [image, setImage] = useState(null);
   const [useCamera, setUseCamera] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
+  // 🌟 추가된 상태
+  const [severity, setSeverity] = useState("");
+  const [heatmapUrl, setHeatmapUrl] = useState("");
+
+  const navigate = useNavigate();
   const webcamRef = useRef(null);
 
   const handleCapture = () => {
@@ -16,13 +21,11 @@ export default function DiagnosisPage() {
     if (imageSrc) {
       const byteString = atob(imageSrc.split(",")[1]);
       const mimeString = imageSrc.split(",")[0].split(":")[1].split(";")[0];
-
       const ab = new ArrayBuffer(byteString.length);
       const ia = new Uint8Array(ab);
       for (let i = 0; i < byteString.length; i++) {
         ia[i] = byteString.charCodeAt(i);
       }
-
       const blob = new Blob([ab], { type: mimeString });
       const file = new File([blob], "capture.jpg", { type: mimeString });
 
@@ -50,16 +53,39 @@ export default function DiagnosisPage() {
     formData.append("file", image);
 
     try {
-      const res = await fetch("https://test2-o3lj.onrender.com/api/predict", {
-        method: "POST",
-        body: formData,
-      });
+      const res = await fetch(
+        "https://scalp-api-latest.onrender.com/api/predict",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
       const data = await res.json();
-      localStorage.setItem("scalpcare_result", JSON.stringify(data.predictions));
+      console.log("✅ 백엔드 응답:", data);
+
+      setSeverity(data.class);
+      setHeatmapUrl(data.heatmap_url ?? "");
+
+      if (!data.class || !data.confidence) {
+        alert("예측 결과를 불러올 수 없습니다. 다시 시도해주세요.");
+        return;
+      }
+      
+      const formatted = [
+      {
+        disease: "모낭홍반(농포)",
+        severity: data.class,
+        confidence: data.confidence,
+        heatmapUrl: data.heatmap_url ?? "",
+      },
+      ];
+
+      // (필요하다면 localStorage 저장, navigate 생략 가능)
+      localStorage.setItem("scalpcare_result", JSON.stringify(formatted));
       navigate("/result");
     } catch (err) {
       alert("예측 요청에 실패했습니다.");
-      console.error(err);
+      console.error("❌ 예측 에러:", err);
     } finally {
       setLoading(false);
     }
@@ -75,12 +101,14 @@ export default function DiagnosisPage() {
           사진을 업로드하거나, 카메라로 촬영해 주세요!
         </p>
 
-        {/* 모드 선택 버튼 */}
+        {/* 모드 선택 */}
         <div className="flex justify-center gap-4 mb-4">
           <button
             onClick={() => setUseCamera(false)}
             className={`px-4 py-2 rounded-lg font-semibold transition ${
-              !useCamera ? "bg-blue-500 text-white" : "bg-gray-200 dark:bg-gray-700"
+              !useCamera
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 dark:bg-gray-700"
             }`}
           >
             파일 업로드
@@ -88,14 +116,16 @@ export default function DiagnosisPage() {
           <button
             onClick={() => setUseCamera(true)}
             className={`px-4 py-2 rounded-lg font-semibold transition ${
-              useCamera ? "bg-blue-500 text-white" : "bg-gray-200 dark:bg-gray-700"
+              useCamera
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 dark:bg-gray-700"
             }`}
           >
             카메라 촬영
           </button>
         </div>
 
-        {/* 업로드 OR 카메라 */}
+        {/* 업로드 또는 카메라 */}
         {!useCamera ? (
           <>
             <label
@@ -139,7 +169,7 @@ export default function DiagnosisPage() {
           />
         )}
 
-        {/* 진단 시작 */}
+        {/* 진단 버튼 */}
         <button
           onClick={handleUpload}
           disabled={loading}
@@ -154,6 +184,17 @@ export default function DiagnosisPage() {
           </p>
         )}
       </div>
+
+      {/* 🌟 예측이 완료되면 바로 ResultCard 렌더링 */}
+      {severity && (
+        <div className="mt-8 w-full max-w-md">
+          <ResultCard
+            severity={severity}
+            heatmapUrl={heatmapUrl}
+            originalImageUrl={previewUrl}
+          />
+        </div>
+      )}
 
       <footer className="mt-10 text-xs text-gray-400">
         © 2025 ScalpCare. All rights reserved.

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ResultCard from "../components/ResultCard";
-import recommendationsJson from "../data/recommendations.json";
 
 export default function Result() {
   const navigate = useNavigate();
@@ -10,25 +9,26 @@ export default function Result() {
   useEffect(() => {
     try {
       const stored = localStorage.getItem("scalpcare_result");
-      const parsed = stored ? JSON.parse(stored) : null;
 
-      const finalResult = Array.isArray(parsed)
-        ? parsed
-        : Array.isArray(parsed?.results)
-        ? parsed.results
-        : [];
-
-      if (!finalResult.length) {
-        alert("예측 결과가 없습니다. 홈으로 돌아갑니다.");
-        navigate("/");
+      if (!stored || stored === "undefined") {
+        alert("예측 결과가 없습니다. 다시 진단해주세요.");
+        navigate("/diagnosis");
         return;
       }
 
-      setResult(finalResult);
+      const parsed = JSON.parse(stored);
+
+      if (!Array.isArray(parsed) || parsed.length === 0) {
+        alert("예측 결과가 없습니다. 다시 진단해주세요.");
+        navigate("/diagnosis");
+        return;
+      }
+
+      setResult(parsed);
     } catch (err) {
-      console.error("결과 파싱 중 오류:", err);
-      alert("결과를 불러오지 못했습니다.");
-      navigate("/");
+      console.error("결과 파싱 오류:", err);
+      alert("결과를 불러올 수 없습니다.");
+      navigate("/diagnosis");
     }
   }, [navigate]);
 
@@ -42,8 +42,8 @@ export default function Result() {
         {result.map((item, idx) => (
           <ResultCard
             key={idx}
-            item={item}
-            recommendationsJson={recommendationsJson}
+            severity={item.severity}
+            heatmapUrl={item.heatmapUrl} // ✅ 추가
           />
         ))}
       </div>
