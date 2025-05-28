@@ -63,28 +63,17 @@ export default function DiagnosisPage() {
       const data = await res.json();
       console.log("✅ 백엔드 응답:", data);
 
-      // -------------------------------
-      // 🌟 여기서 camelCase 상태로 변환
       setSeverity(data.class);
       setHeatmapUrl(data.heatmap_url ?? "");
-      // -------------------------------
-      // ✅ 응답 구조에 맞게 수정 (result 없음)
+
       if (!data.class || !data.confidence) {
         alert("예측 결과를 불러올 수 없습니다. 다시 시도해주세요.");
         return;
       }
 
-      const formatted = [
-        {
-          disease: "모낭홍반(농포)",
-          severity: data.class,
-          confidence: data.confidence,
-          heatmapUrl: data.heatmap_url ?? "",
-        },
-      ];
-
-      localStorage.setItem("scalpcare_result", JSON.stringify(formatted));
-      navigate("/result");
+      // (필요하다면 localStorage 저장, navigate 생략 가능)
+      // localStorage.setItem("scalpcare_result", JSON.stringify([...]));
+      // navigate("/result");
     } catch (err) {
       alert("예측 요청에 실패했습니다.");
       console.error("❌ 예측 에러:", err);
@@ -190,7 +179,11 @@ export default function DiagnosisPage() {
       {/* 🌟 예측이 완료되면 바로 ResultCard 렌더링 */}
       {severity && (
         <div className="mt-8 w-full max-w-md">
-          <ResultCard severity={severity} heatmapUrl={heatmapUrl} />
+          <ResultCard
+            severity={severity}
+            heatmapUrl={heatmapUrl}
+            originalImageUrl={previewUrl}
+          />
         </div>
       )}
 
