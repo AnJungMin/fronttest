@@ -1,12 +1,18 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Webcam from "react-webcam";
+import ResultCard from "./ResultCard";
 
 export default function DiagnosisPage() {
   const [image, setImage] = useState(null);
   const [useCamera, setUseCamera] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // 🌟 추가된 상태
+  const [severity, setSeverity] = useState("");
+  const [heatmapUrl, setHeatmapUrl] = useState("");
+
   const navigate = useNavigate();
   const webcamRef = useRef(null);
 
@@ -15,13 +21,11 @@ export default function DiagnosisPage() {
     if (imageSrc) {
       const byteString = atob(imageSrc.split(",")[1]);
       const mimeString = imageSrc.split(",")[0].split(":")[1].split(";")[0];
-
       const ab = new ArrayBuffer(byteString.length);
       const ia = new Uint8Array(ab);
       for (let i = 0; i < byteString.length; i++) {
         ia[i] = byteString.charCodeAt(i);
       }
-
       const blob = new Blob([ab], { type: mimeString });
       const file = new File([blob], "capture.jpg", { type: mimeString });
 
@@ -49,14 +53,21 @@ export default function DiagnosisPage() {
     formData.append("file", image);
 
     try {
-      const res = await fetch("https://scalp-api-latest.onrender.com/api/predict", {
-        method: "POST",
-        body: formData,
-      });
-
+      const res = await fetch(
+        "https://scalp-api-latest.onrender.com/api/predict",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
       const data = await res.json();
       console.log("✅ 백엔드 응답:", data);
 
+      // -------------------------------
+      // 🌟 여기서 camelCase 상태로 변환
+      setSeverity(data.class);
+      setHeatmapUrl(data.heatmap_url ?? "");
+      // -------------------------------
       // ✅ 응답 구조에 맞게 수정 (result 없음)
       if (!data.class || !data.confidence) {
         alert("예측 결과를 불러올 수 없습니다. 다시 시도해주세요.");
@@ -97,7 +108,9 @@ export default function DiagnosisPage() {
           <button
             onClick={() => setUseCamera(false)}
             className={`px-4 py-2 rounded-lg font-semibold transition ${
-              !useCamera ? "bg-blue-500 text-white" : "bg-gray-200 dark:bg-gray-700"
+              !useCamera
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 dark:bg-gray-700"
             }`}
           >
             파일 업로드
@@ -105,7 +118,9 @@ export default function DiagnosisPage() {
           <button
             onClick={() => setUseCamera(true)}
             className={`px-4 py-2 rounded-lg font-semibold transition ${
-              useCamera ? "bg-blue-500 text-white" : "bg-gray-200 dark:bg-gray-700"
+              useCamera
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 dark:bg-gray-700"
             }`}
           >
             카메라 촬영
@@ -171,6 +186,13 @@ export default function DiagnosisPage() {
           </p>
         )}
       </div>
+
+      {/* 🌟 예측이 완료되면 바로 ResultCard 렌더링 */}
+      {severity && (
+        <div className="mt-8 w-full max-w-md">
+          <ResultCard severity={severity} heatmapUrl={heatmapUrl} />
+        </div>
+      )}
 
       <footer className="mt-10 text-xs text-gray-400">
         © 2025 ScalpCare. All rights reserved.
