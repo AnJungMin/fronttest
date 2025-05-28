@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Webcam from "react-webcam";
-import ResultCard from "./ResultCard";
+import ResultCard from "../components/ResultCard";
 
 export default function DiagnosisPage() {
   const [image, setImage] = useState(null);
