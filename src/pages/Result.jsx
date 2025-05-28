@@ -9,8 +9,17 @@ export default function Result() {
   useEffect(() => {
     try {
       const stored = localStorage.getItem("scalpcare_result");
-      const parsed = stored ? JSON.parse(stored) : [];
 
+      // ✅ undefined, null, 잘못된 값 대응
+      if (!stored || stored === "undefined") {
+        alert("예측 결과가 없습니다. 다시 진단해주세요.");
+        navigate("/diagnosis");
+        return;
+      }
+
+      const parsed = JSON.parse(stored);
+
+      // ✅ 배열이 아니거나 비어 있으면 진단으로 리디렉션
       if (!Array.isArray(parsed) || parsed.length === 0) {
         alert("예측 결과가 없습니다. 다시 진단해주세요.");
         navigate("/diagnosis");
@@ -35,7 +44,6 @@ export default function Result() {
         {result.map((item, idx) => (
           <ResultCard
             key={idx}
-            disease={item.disease}
             severity={item.severity}
             confidence={item.confidence}
           />
