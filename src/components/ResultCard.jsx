@@ -1,4 +1,4 @@
-export default function ResultCard({ severity }) {
+export default function ResultCard({ severity, heatmapUrl }) {
   const severityStyle = {
     양호: "bg-green-100 text-green-800",
     경증: "bg-yellow-100 text-yellow-800",
@@ -22,6 +22,17 @@ export default function ResultCard({ severity }) {
       <p className="text-sm text-gray-700 dark:text-gray-300 mt-4">
         두피 상태는 <strong>{severity}</strong> 수준입니다.
       </p>
+
+      {heatmapUrl && (
+        <div className="mt-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">진단 히트맵</p>
+          <img
+            src={`https://your-backend-url.com${heatmapUrl}`}
+            alt="히트맵 이미지"
+            className="rounded-lg w-full max-w-md mx-auto"
+          />
+        </div>
+      )}
     </div>
   );
 }

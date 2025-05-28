@@ -55,12 +55,13 @@ export default function DiagnosisPage() {
       });
       const data = await res.json();
 
-      // ✅ 응답을 프론트 형식으로 변환
+      // ✅ 백엔드 응답 구조에 맞게 가공
       const formatted = [
         {
           disease: "모낭홍반(농포)",
-          severity: data.class,
-          confidence: data.confidence,
+          severity: data.result.class,
+          confidence: data.result.confidence,
+          heatmapUrl: data.heatmap_url,
         },
       ];
 

@@ -10,7 +10,6 @@ export default function Result() {
     try {
       const stored = localStorage.getItem("scalpcare_result");
 
-      // ❗ 값이 없거나 비정상일 경우 진단 페이지로 이동
       if (!stored || stored === "undefined") {
         alert("예측 결과가 없습니다. 다시 진단해주세요.");
         navigate("/diagnosis");
@@ -44,6 +43,7 @@ export default function Result() {
           <ResultCard
             key={idx}
             severity={item.severity}
+            heatmapUrl={item.heatmapUrl} // ✅ 추가
           />
         ))}
       </div>
