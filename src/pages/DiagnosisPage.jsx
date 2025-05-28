@@ -70,9 +70,18 @@ export default function DiagnosisPage() {
         alert("예측 결과를 불러올 수 없습니다. 다시 시도해주세요.");
         return;
       }
+      
+      const formatted = [
+      {
+        disease: "모낭홍반(농포)",
+        severity: data.class,
+        confidence: data.confidence,
+        heatmapUrl: data.heatmap_url ?? "",
+      },
+      ];
 
       // (필요하다면 localStorage 저장, navigate 생략 가능)
-       localStorage.setItem("scalpcare_result", JSON.stringify([formatted]));
+      localStorage.setItem("scalpcare_result", JSON.stringify(formatted));
       navigate("/result");
     } catch (err) {
       alert("예측 요청에 실패했습니다.");
