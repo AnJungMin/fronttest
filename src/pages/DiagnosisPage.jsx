@@ -8,7 +8,6 @@ export default function DiagnosisPage() {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
   const webcamRef = useRef(null);
 
   const handleCapture = () => {
@@ -55,7 +54,17 @@ export default function DiagnosisPage() {
         body: formData,
       });
       const data = await res.json();
-      localStorage.setItem("scalpcare_result", JSON.stringify(data.predictions));
+
+      // ✅ 응답을 프론트 형식으로 변환
+      const formatted = [
+        {
+          disease: "모낭홍반(농포)",
+          severity: data.class,
+          confidence: data.confidence,
+        },
+      ];
+
+      localStorage.setItem("scalpcare_result", JSON.stringify(formatted));
       navigate("/result");
     } catch (err) {
       alert("예측 요청에 실패했습니다.");
@@ -75,7 +84,7 @@ export default function DiagnosisPage() {
           사진을 업로드하거나, 카메라로 촬영해 주세요!
         </p>
 
-        {/* 모드 선택 버튼 */}
+        {/* 모드 선택 */}
         <div className="flex justify-center gap-4 mb-4">
           <button
             onClick={() => setUseCamera(false)}
@@ -95,7 +104,7 @@ export default function DiagnosisPage() {
           </button>
         </div>
 
-        {/* 업로드 OR 카메라 */}
+        {/* 업로드 또는 카메라 */}
         {!useCamera ? (
           <>
             <label
@@ -139,7 +148,7 @@ export default function DiagnosisPage() {
           />
         )}
 
-        {/* 진단 시작 */}
+        {/* 진단 버튼 */}
         <button
           onClick={handleUpload}
           disabled={loading}
