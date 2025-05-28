@@ -72,7 +72,7 @@ export default function DiagnosisPage() {
       }
 
       // (필요하다면 localStorage 저장, navigate 생략 가능)
-       localStorage.setItem("scalpcare_result", JSON.stringify([...]));
+       localStorage.setItem("scalpcare_result", JSON.stringify([formatted]));
       navigate("/result");
     } catch (err) {
       alert("예측 요청에 실패했습니다.");
